@@ -1,0 +1,8 @@
+# terraform files
+.terraform/
+secrets.tfvars
+terraform.tfstate
+terraform.tfstate.backup
+
+# compiled files
+dist/
