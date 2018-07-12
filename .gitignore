@@ -1,3 +1,5 @@
 .DS_Store
-api/
-ui/
+/api
+/ui
+/build
+/sample-data

@@ -1,7 +1,45 @@
 version: '3'
 
 services:
+  terraform:
+    build: ./terraform
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./build/sam_local_ready_app:/lambda_ready_app
+    depends_on:
+      - api
 
   api:
-    build: ./api
-    target: for-deploy
+    image: swiftdeveloper/swift-blog-api:latest
+    volumes:
+      - ~/.aws:/root/.aws/:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./build/sam_local_ready_app:/sam_local_ready_app
+      - ./build/lambda_ready_app:/lambda_ready_app
+      - ./terraform/scripts/wait-for-it.sh:/usr/local/bin/wait-for-it.sh
+    ports:
+      - 3000:3000
+    environment:
+      - "HOST_CODE_PATH=${PWD}/build/sam_local_ready_app"
+      - "DB_HOST=host.docker.internal"
+    depends_on: 
+      - db
+
+  mock_data_populator:
+    image: swiftdeveloper/swift-blog-api:express-latest
+    command: /bin/sh -c "wait-for-it.sh db:8000 -- node dynamo-db-populator.js"
+    volumes:
+      - ~/.aws:/root/.aws/:ro
+      - ./terraform/scripts/wait-for-it.sh:/usr/local/bin/wait-for-it.sh
+    environment:
+      - "DB_HOST=db"
+    depends_on:
+      - db
+    links:
+      - db
+      
+  db:
+    image: cnadiminti/dynamodb-local:latest
+    ports:
+      - 8000:8000

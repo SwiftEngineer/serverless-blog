@@ -1,4 +1,4 @@
-resource "aws_dynamodb_table" "basic-dynamodb-table" {
+resource "aws_dynamodb_table" "basic_dynamodb_table" {
   name           = "Posts"
   read_capacity  = 25
   write_capacity = 25

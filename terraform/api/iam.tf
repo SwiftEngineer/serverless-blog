@@ -31,7 +31,7 @@ resource "aws_iam_role_policy" "blog_posts_dynamo_db_read_only" {
         {
             "Action": "dynamodb:*",
             "Effect": "Allow",
-            "Resource": "${aws_dynamodb_table.basic-dynamodb-table.arn}",
+            "Resource": "${aws_dynamodb_table.basic_dynamodb_table.arn}",
             "Sid": ""
         }
     ]

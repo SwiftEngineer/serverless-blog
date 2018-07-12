@@ -20,3 +20,28 @@ We use a docker container to build and deploy each service. Why? Docker let's us
 **TL;DR:** Provides insulation from some of the costly mistakes people can make during the Continuous Deployment pipeline.
 
 So to summarize, why do we use Docker to build and deploy the UI? We use it so we can manage dependencies, keep our services portable and save ourselves from some potentially time consuming mistakes.
+
+
+## Things to do after you Fork this
+
+1. Add certificate to ACM, and make sure it's in us-east-1
+2. Do the terraform apply
+3. If you bought the cert from someone else besides amazon, you're gonna have to switch up the name servers on that domain. 
+
+```
+terraform state show aws_route53_zone.zone
+
+
+id             = ##############
+comment        = Managed by Terraform
+force_destroy  = false
+name           = doing.science
+name_servers.# = 4
+name_servers.0 = ns-###.awsdns-###.org
+name_servers.1 = ns-###.awsdns-###.co.uk
+name_servers.2 = ns-###.awsdns-###.com
+name_servers.3 = ns-###.awsdns-###.net
+tags.%         = 0
+zone_id        = ##############
+
+```
