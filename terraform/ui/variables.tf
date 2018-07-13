@@ -17,7 +17,7 @@ variable "stage" {
 }
 
 variable "subdomain" {
-  description = "The subdomain to run the webiste as (examples: \"www\", \"kanyewest\", \"iam\"...)"
+  description = "The subdomain used to access the website. (examples: \"www\", \"kanyewest\", \"iam\"...)"
 }
 
 variable "root_domain" {

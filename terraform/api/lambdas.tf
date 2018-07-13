@@ -7,7 +7,7 @@ resource "aws_lambda_function" "posts_index" {
 
   # which function to use within the entire codebase
   handler = "index.handleIndex"
-  runtime = "nodejs8.10"
+  runtime = "nodejs6.10"
 
   role = "${aws_iam_role.blog_posts_lambda_exec.arn}"
 }
@@ -27,5 +27,5 @@ resource "aws_s3_bucket" "lambda_bucket" {
 resource "aws_s3_bucket_object" "lambda_code" {
   key    = "api.zip"
   bucket = "${aws_s3_bucket.lambda_bucket.id}"
-  source = "/Users/swift/Documents/workspace/repos/serverless-blog/terraform/dist/api.zip"
+  source = "/lambda_ready_app/api.zip"
 }

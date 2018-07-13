@@ -17,9 +17,13 @@ variable "stage" {
 }
 
 variable "subdomain" {
-  description = "The subdomain to run the webiste as (examples: \"www\", \"kanyewest\", \"iam\"...)"
+  description = "The subdomain used to access the api for the website. (examples: \"api-for\", \"www\", \"kanyewest\", \"iam\"...)"
 }
 
 variable "root_domain" {
-  description = "You may know it as the zone apex or naked domain (examples: \"doyouknowtheway.com\", \"bestartist.net\", \"so.cool\"...)"
+  description = "You may know it as the zone apex or naked domain (examples: \"my.website\", \"doyouknowtheway.com\", \"bestartist.net\", \"so.cool\"...)"
+}
+
+variable "certificate_arn" {
+  description = "ARN of certificate to use for HTTPS and gateway domain."
 }

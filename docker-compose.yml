@@ -1,14 +1,18 @@
 version: '3'
 
 services:
-  terraform:
+  tf:
     build: ./terraform
+    command: sh
     stdin_open: true
     tty: true
     volumes:
-      - ./build/sam_local_ready_app:/lambda_ready_app
+      - ./build/lambda_ready_app:/lambda_ready_app
+      - ./terraform:/blog-infrastructure-terraform
     depends_on:
       - api
+    environment:
+      - "API_TARGET=api:3000"
 
   api:
     image: swiftdeveloper/swift-blog-api:latest
@@ -25,6 +29,7 @@ services:
       - "DB_HOST=host.docker.internal"
     depends_on: 
       - db
+      - mock_data_populator
 
   mock_data_populator:
     image: swiftdeveloper/swift-blog-api:express-latest
@@ -33,7 +38,7 @@ services:
       - ~/.aws:/root/.aws/:ro
       - ./terraform/scripts/wait-for-it.sh:/usr/local/bin/wait-for-it.sh
     environment:
-      - "DB_HOST=db"
+      - DB_HOST=db
     depends_on:
       - db
     links:

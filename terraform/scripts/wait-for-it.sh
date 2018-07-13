@@ -20,6 +20,8 @@ USAGE
 }
 
 wait_for() {
+  echo "Waiting for dependent services to be finished creating..."
+
   for i in `seq $TIMEOUT` ; do
     nc -z "$HOST" "$PORT" > /dev/null 2>&1
     
