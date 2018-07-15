@@ -35,3 +35,77 @@ POLICY
     error_document = "error.html"
   }
 }
+
+resource "aws_s3_bucket_object" "home_img" {
+  key    = "img/home.svg"
+  bucket = "${aws_s3_bucket.www.id}"
+  source = "/s3_ready_app/img/home.svg"
+
+  content_type = "image/svg+xml"
+}
+
+resource "aws_s3_bucket_object" "maface_img" {
+  key    = "img/maface.jpg"
+  bucket = "${aws_s3_bucket.www.id}"
+  source = "/s3_ready_app/img/maface.jpg"
+}
+
+resource "aws_s3_bucket_object" "parallax_img" {
+  key    = "img/parallax.svg"
+  bucket = "${aws_s3_bucket.www.id}"
+  source = "/s3_ready_app/img/parallax.svg"
+
+  content_type = "image/svg+xml"
+}
+
+resource "aws_s3_bucket_object" "css" {
+  key    = "static/css/main.css"
+  bucket = "${aws_s3_bucket.www.id}"
+  source = "/s3_ready_app/static/css/main.css"
+
+  content_type = "text/css"
+}
+
+resource "aws_s3_bucket_object" "nucleo_outline_eot" {
+  key    = "static/fonts/nucleo-outline.eot"
+  bucket = "${aws_s3_bucket.www.id}"
+  source = "/s3_ready_app/static/fonts/nucleo-outline.eot"
+}
+
+resource "aws_s3_bucket_object" "nucleo_outline_ttf" {
+  key    = "static/fonts/nucleo-outline.ttf"
+  bucket = "${aws_s3_bucket.www.id}"
+  source = "/s3_ready_app/static/fonts/nucleo-outline.ttf"
+}
+
+resource "aws_s3_bucket_object" "nucleo_outline_woff" {
+  key    = "static/fonts/nucleo-outline.woff"
+  bucket = "${aws_s3_bucket.www.id}"
+  source = "/s3_ready_app/static/fonts/nucleo-outline.woff"
+}
+
+resource "aws_s3_bucket_object" "nucleo_outline_woff2" {
+  key    = "static/fonts/nucleo-outline.woff2"
+  bucket = "${aws_s3_bucket.www.id}"
+  source = "/s3_ready_app/static/fonts/nucleo-outline.woff2"
+}
+
+resource "aws_s3_bucket_object" "js" {
+  key    = "static/js/main.js"
+  bucket = "${aws_s3_bucket.www.id}"
+  source = "/s3_ready_app/static/js/main.js"
+}
+
+resource "aws_s3_bucket_object" "favicon" {
+  key    = "favicon.ico"
+  bucket = "${aws_s3_bucket.www.id}"
+  source = "/s3_ready_app/favicon.ico"
+}
+
+resource "aws_s3_bucket_object" "index_html" {
+  key    = "index.html"
+  bucket = "${aws_s3_bucket.www.id}"
+  source = "/s3_ready_app/index.html"
+
+  content_type = "text/html"
+}

@@ -16,6 +16,10 @@ variable "stage" {
   default     = "dev"
 }
 
+variable "website_subdomain" {
+  description = "The subdomain used to access the website. (examples: \"ui-for\", \"www\", \"kanyewest\", \"iam\"...)"
+}
+
 variable "subdomain" {
   description = "The subdomain used to access the api for the website. (examples: \"api-for\", \"www\", \"kanyewest\", \"iam\"...)"
 }

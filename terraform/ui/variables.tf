@@ -23,3 +23,7 @@ variable "subdomain" {
 variable "root_domain" {
   description = "You may know it as the zone apex or naked domain (examples: \"doyouknowtheway.com\", \"bestartist.net\", \"so.cool\"...)"
 }
+
+variable "certificate_arn" {
+  description = "ARN of certificate to use for HTTPS and gateway domain."
+}

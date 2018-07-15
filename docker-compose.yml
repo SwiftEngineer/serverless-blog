@@ -8,11 +8,25 @@ services:
     tty: true
     volumes:
       - ./build/lambda_ready_app:/lambda_ready_app
+      - ./build/s3_ready_app:/s3_ready_app
       - ./terraform:/blog-infrastructure-terraform
     depends_on:
       - api
     environment:
       - "API_TARGET=api:3000"
+
+  ui:
+    image: swiftdeveloper/swift-blog-ui:0.2.0
+    volumes:
+      - ./build/s3_ready_app:/app/s3_ready_app
+    ports:
+      - 1337:1337
+    environment:
+      - "API_URL=https://api-for.doing.science"
+    depends_on: 
+      - db
+      - mock_data_populator
+
 
   api:
     image: swiftdeveloper/swift-blog-api:latest
@@ -25,8 +39,9 @@ services:
     ports:
       - 3000:3000
     environment:
-      - "HOST_CODE_PATH=${PWD}/build/sam_local_ready_app"
-      - "DB_HOST=host.docker.internal"
+      - HOST_CODE_PATH=${PWD}/build/sam_local_ready_app
+      - DB_HOST=host.docker.internal
+      - ALLOWED_ORIGIN=*
     depends_on: 
       - db
       - mock_data_populator

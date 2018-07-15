@@ -10,6 +10,12 @@ resource "aws_lambda_function" "posts_index" {
   runtime = "nodejs6.10"
 
   role = "${aws_iam_role.blog_posts_lambda_exec.arn}"
+
+  environment = {
+    variables {
+      ALLOWED_ORIGIN = "https://${var.website_subdomain}.${var.root_domain}"
+    }
+  }
 }
 
 resource "aws_s3_bucket" "lambda_bucket" {
