@@ -13,16 +13,17 @@ services:
     depends_on:
       - api
     environment:
-      - "API_TARGET=api:3000"
+      - API_TARGET=api:3000
+      - UI_TARGET=ui:1338
 
   ui:
-    image: swiftdeveloper/swift-blog-ui:0.2.0
+    image: swiftdeveloper/swift-blog-ui:0.4.1
     volumes:
       - ./build/s3_ready_app:/app/s3_ready_app
     ports:
       - 1337:1337
     environment:
-      - "API_URL=https://api-for.doing.science"
+      - API_URL=https://api-for.doing.science
     depends_on: 
       - db
       - mock_data_populator

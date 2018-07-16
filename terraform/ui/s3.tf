@@ -36,14 +36,6 @@ POLICY
   }
 }
 
-resource "aws_s3_bucket_object" "home_img" {
-  key    = "img/home.svg"
-  bucket = "${aws_s3_bucket.www.id}"
-  source = "/s3_ready_app/img/home.svg"
-
-  content_type = "image/svg+xml"
-}
-
 resource "aws_s3_bucket_object" "maface_img" {
   key    = "img/maface.jpg"
   bucket = "${aws_s3_bucket.www.id}"
