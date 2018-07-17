@@ -1,4 +1,4 @@
-# IAM role for the lambdas
+# Base IAM role to be used by the lambda functions
 resource "aws_iam_role" "blog_posts_lambda_exec" {
   name = "BlogLambdaPolicy"
 
@@ -17,11 +17,20 @@ resource "aws_iam_role" "blog_posts_lambda_exec" {
   ]
 }
 EOF
+
+  # Tags to track costs
+  tags = {
+    Project     = "${var.website_subdomain}.${var.root_domain}"
+    ServiceType = "api"
+  }
 }
 
-# IAM role policy with access to dynamo db read only features, attached to lambda policy
+# IAM role policy with access to dynamo db read only features,
+# it's attached to the above lambda policy
 resource "aws_iam_role_policy" "blog_posts_dynamo_db_read_only" {
   name = "BlogDynamoReadOnlyDBPolicy"
+
+  # this is how we attach a policy to a role
   role = "${aws_iam_role.blog_posts_lambda_exec.id}"
 
   policy = <<EOF
@@ -37,11 +46,20 @@ resource "aws_iam_role_policy" "blog_posts_dynamo_db_read_only" {
     ]
 }
 EOF
+
+  # Tags to track costs
+  tags = {
+    Project     = "${var.website_subdomain}.${var.root_domain}"
+    ServiceType = "api"
+  }
 }
 
-# IAM role policy with access to cloudwatch
+# IAM role policy with access to log creation in cloudwatch,
+# because we like logs.
+# it's attached to the above lambda policy.
 resource "aws_iam_role_policy" "cloud_watch" {
   name = "BlogCloudWatchLoggingPolicy"
+
   role = "${aws_iam_role.blog_posts_lambda_exec.id}"
 
   policy = <<EOF
@@ -60,4 +78,10 @@ resource "aws_iam_role_policy" "cloud_watch" {
     ]
 }
 EOF
+
+  # Tags to track costs
+  tags = {
+    Project     = "${var.website_subdomain}.${var.root_domain}"
+    ServiceType = "api"
+  }
 }

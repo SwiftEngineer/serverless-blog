@@ -17,7 +17,7 @@ services:
       - UI_TARGET=ui:1338
 
   ui:
-    image: swiftdeveloper/swift-blog-ui:0.4.1
+    image: swiftdeveloper/swift-blog-ui:0.4.2
     volumes:
       - ./build/s3_ready_app:/app/s3_ready_app
     ports:
@@ -30,7 +30,7 @@ services:
 
 
   api:
-    image: swiftdeveloper/swift-blog-api:latest
+    image: swiftdeveloper/swift-blog-api:0.0.1
     volumes:
       - ~/.aws:/root/.aws/:ro
       - /var/run/docker.sock:/var/run/docker.sock

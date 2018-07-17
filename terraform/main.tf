@@ -14,6 +14,21 @@ resource "aws_acm_certificate" "cloudfront_certificate" {
   provider = "aws.us_east_provider"
 }
 
+# route 53 zone for our domain.
+# this is gonna be used by both the api and ui for DNS,
+# so I'm gonna put it up here and pass it's zone_id down into
+# each of the services that need it.
+resource "aws_route53_zone" "zone" {
+  name = "${var.root_domain}"
+
+  # Tags to track costs.
+  tags = {
+    Project     = "${var.website_subdomain}.${var.root_domain}"
+    ServiceType = "api"
+    Version     = "${var.version}"
+  }
+}
+
 module "api" {
   source = "./api"
 
@@ -32,6 +47,8 @@ module "api" {
   root_domain = "${var.root_domain}"
 
   certificate_arn = "${aws_acm_certificate.cloudfront_certificate.arn}"
+
+  zone_id = "${aws_route53_zone.zone.zone_id}"
 }
 
 module "ui" {

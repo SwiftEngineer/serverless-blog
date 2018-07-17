@@ -20,7 +20,7 @@ resource "aws_cloudfront_distribution" "www_distribution" {
   }
 
   enabled             = true
-  default_root_object = "index.html"
+  default_root_object = "${aws_s3_bucket.www.website.index_document}"
 
   // All values are defaults from the AWS console.
   default_cache_behavior {
