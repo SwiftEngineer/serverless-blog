@@ -27,3 +27,11 @@ variable "api_subdomain" {
 variable "root_domain" {
   description = "You may know it as the zone apex or naked domain (examples: \"doyouknowtheway.com\", \"bestartist.net\", \"so.cool\"...)"
 }
+
+variable "api_version" {
+  description = "Version of the api to deploy. Other versions' code will remain in S3, but will no longer be used to handle requests. (examples: \"1.0.0\", \"0.1.2\", \"1.3.7\")"
+}
+
+variable "ui_version" {
+  description = "Version of the ui to deploy. Other versions' code will remain in S3, but will no longer be served to clients. (examples: \"1.0.0\", \"0.1.2\", \"1.3.7\")"
+}

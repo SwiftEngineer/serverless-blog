@@ -29,7 +29,11 @@ resource "aws_route53_zone" "zone" {
   }
 }
 
+# This module describes the API infrastructure we want to provision.
+# If you want to dig in, check out the code itself.
 module "api" {
+  # Path to the module's source. If you wanna learn more about the API,
+  # check out the files in this folder.
   source = "./api"
 
   aws_secret_key_id = "${var.aws_secret_key_id}"
@@ -49,6 +53,8 @@ module "api" {
   certificate_arn = "${aws_acm_certificate.cloudfront_certificate.arn}"
 
   zone_id = "${aws_route53_zone.zone.zone_id}"
+
+  version = "${var.api_version}"
 }
 
 module "ui" {
@@ -67,4 +73,6 @@ module "ui" {
   root_domain = "${var.root_domain}"
 
   certificate_arn = "${aws_acm_certificate.cloudfront_certificate.arn}"
+
+  version = "${var.ui_version}"
 }
