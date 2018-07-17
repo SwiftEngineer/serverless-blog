@@ -1,5 +1,5 @@
 locals {
-  url_path_safe_version_number = "${replace(var.version, ".", "_")}"
+  url_path_safe_version_number = "${replace(var.api_version, ".", "_")}"
 }
 
 # The ApiGateway Rest API to attach the lambdas to.
@@ -11,116 +11,72 @@ locals {
 resource "aws_api_gateway_rest_api" "blog_api" {
   name        = "BlogApi"
   description = "Api for the Blog application."
-
-  # Tags to track costs.
-  tags = {
-    Project     = "${var.website_subdomain}.${var.root_domain}"
-    ServiceType = "api"
-    Version     = "${var.version}"
-  }
 }
 
 # The ApiGateway Resource to handle index requests for BlogPosts.
 # If a request hits the API and matches the `path_part`, this 
 # resource will attempt to handle it.
 resource "aws_api_gateway_resource" "blog_posts_index_resource" {
-  rest_api_id = "${aws_api_gateway_rest_api.blog_posts_api.id}"
-  parent_id   = "${aws_api_gateway_rest_api.blog_posts_api.root_resource_id}"
+  rest_api_id = "${aws_api_gateway_rest_api.blog_api.id}"
+  parent_id   = "${aws_api_gateway_rest_api.blog_api.root_resource_id}"
   path_part   = "posts"
-
-  # Tags to track costs.
-  tags = {
-    Project     = "${var.website_subdomain}.${var.root_domain}"
-    ServiceType = "api"
-    Version     = "${var.version}"
-  }
 }
 
 # The ApiGateway Resource to method to handle requests for blog posts
 resource "aws_api_gateway_method" "blog_posts_index_method" {
-  rest_api_id   = "${aws_api_gateway_rest_api.blog_posts_api.id}"
-  resource_id   = "${aws_api_gateway_resource.blog_posts_resource.id}"
+  rest_api_id   = "${aws_api_gateway_rest_api.blog_api.id}"
+  resource_id   = "${aws_api_gateway_resource.blog_posts_index_resource.id}"
   http_method   = "GET"
   authorization = "NONE"
-
-  # Tags to track costs.
-  tags = {
-    Project     = "${var.website_subdomain}.${var.root_domain}"
-    ServiceType = "api"
-    Version     = "${var.version}"
-  }
 }
 
 # The ApiGateway Resource to handle index requests for BlogPosts.
 # If a request hits the API and matches the `path_part`, this 
 # resource will attempt to handle it.
 resource "aws_api_gateway_resource" "blog_posts_show_resource" {
-  rest_api_id = "${aws_api_gateway_rest_api.blog_posts_api.id}"
-  parent_id   = "${aws_api_gateway_rest_api.blog_posts_api.root_resource_id}"
+  rest_api_id = "${aws_api_gateway_rest_api.blog_api.id}"
+  parent_id   = "${aws_api_gateway_resource.blog_posts_index_resource.id}"
 
   # The {postLink} thing you see here is pretty important. 
   # The curly braces make it become a path parameter so that
   # we can use it in our lambda code.
-  # In this case, we use it as an identifier to find a specific
-  # post, but in a more formal REST API you set this path to be
-  # something like: "/posts/{postId}" or "/posts/{posts_identifier}"
-  path_part = "/posts/{postLink}"
-
-  # Tags to track costs.
-  tags = {
-    Project     = "${var.website_subdomain}.${var.root_domain}"
-    ServiceType = "api"
-    Version     = "${var.version}"
-  }
+  path_part = "{postLink}"
 }
 
 resource "aws_api_gateway_method" "blog_posts_show_method" {
-  rest_api_id   = "${aws_api_gateway_rest_api.blog_posts_api.id}"
-  resource_id   = "${aws_api_gateway_resource.blog_posts_resource.id}"
+  rest_api_id   = "${aws_api_gateway_rest_api.blog_api.id}"
+  resource_id   = "${aws_api_gateway_resource.blog_posts_show_resource.id}"
   http_method   = "GET"
   authorization = "NONE"
 
-  # Tags to track costs.
-  tags = {
-    Project     = "${var.website_subdomain}.${var.root_domain}"
-    ServiceType = "api"
-    Version     = "${var.version}"
+  request_parameters = {
+    "method.request.path.postLink" = true
   }
 }
 
 # This integration ties the blog posts index lambda to api gateway 
 resource "aws_api_gateway_integration" "blog_posts_index_integration" {
-  rest_api_id = "${aws_api_gateway_rest_api.blog_posts_api.id}"
+  rest_api_id = "${aws_api_gateway_rest_api.blog_api.id}"
   resource_id = "${aws_api_gateway_method.blog_posts_index_method.resource_id}"
   http_method = "${aws_api_gateway_method.blog_posts_index_method.http_method}"
 
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
   uri                     = "${aws_lambda_function.posts_index.invoke_arn}"
-
-  # Tags to track costs.
-  tags = {
-    Project     = "${var.website_subdomain}.${var.root_domain}"
-    ServiceType = "api"
-    Version     = "${var.version}"
-  }
 }
 
 # This integration ties the blog posts show lambda to api gateway 
 resource "aws_api_gateway_integration" "blog_posts_show_integration" {
-  rest_api_id = "${aws_api_gateway_rest_api.blog_posts_api.id}"
+  rest_api_id = "${aws_api_gateway_rest_api.blog_api.id}"
   resource_id = "${aws_api_gateway_method.blog_posts_show_method.resource_id}"
   http_method = "${aws_api_gateway_method.blog_posts_show_method.http_method}"
 
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = "${aws_lambda_function.posts_index.invoke_arn}"
+  uri                     = "${aws_lambda_function.posts_show.invoke_arn}"
 
-  # Tags to track costs.
-  tags = {
-    Project     = "${var.website_subdomain}.${var.root_domain}"
-    ServiceType = "api"
-    Version     = "${var.version}"
+  request_parameters {
+    "integration.request.path.postLink" = "method.request.path.postLink"
   }
 }
 
@@ -131,15 +87,8 @@ resource "aws_api_gateway_deployment" "blog_posts_deployment" {
     "aws_api_gateway_integration.blog_posts_show_integration",
   ]
 
-  rest_api_id = "${aws_api_gateway_rest_api.blog_posts_api.id}"
+  rest_api_id = "${aws_api_gateway_rest_api.blog_api.id}"
   stage_name  = "${var.stage}"
-
-  # Tags to track costs.
-  tags = {
-    Project     = "${var.website_subdomain}.${var.root_domain}"
-    ServiceType = "api"
-    Version     = "${var.version}"
-  }
 }
 
 # permission granted to the "aws_api_gateway_rest_api.blog_api" resource
@@ -151,25 +100,18 @@ resource "aws_lambda_permission" "api_gateway_deployment_lambda_allowance" {
   principal     = "apigateway.amazonaws.com"
 
   # The */* portion grants access from any method on any resource,
-  # as long as the stage matches the current stage we are working in
+  # within this deployment.
   #
   # Notice: We don't use the version number here, because we have an
   # API for each version, and this resource only works on one API at
   # a time.
-  source_arn = "${aws_api_gateway_deployment.blog_posts_deployment.execution_arn}/${var.stage}/*/*"
-
-  # Tags to track costs.
-  tags = {
-    Project     = "${var.website_subdomain}.${var.root_domain}"
-    ServiceType = "api"
-    Version     = "${var.version}"
-  }
+  source_arn = "${aws_api_gateway_deployment.blog_posts_deployment.execution_arn}/*/*"
 }
 
 # Api Gateway is gonna lean on cloudfront enable HTTPS. So all
 # this route53 record has to do is be an alias for the ApiGateway's
 # Cloudfront.
-resource "aws_route53_record" "www" {
+resource "aws_route53_record" "api_cloudfront_alias" {
   # Route 53 zone to place this record in, which was passed into this module
   # from the main.tf file.
   zone_id = "${var.zone_id}"
@@ -183,13 +125,6 @@ resource "aws_route53_record" "www" {
     name                   = "${aws_api_gateway_domain_name.api_domain.cloudfront_domain_name}"
     zone_id                = "${aws_api_gateway_domain_name.api_domain.cloudfront_zone_id}"
     evaluate_target_health = false
-  }
-
-  # Tags to track costs.
-  # No Version tag because this will be shared by all versions and stages of the App.
-  tags = {
-    Project     = "${var.website_subdomain}.${var.root_domain}"
-    ServiceType = "api"
   }
 }
 
@@ -208,13 +143,6 @@ resource "aws_api_gateway_domain_name" "api_domain" {
   # certificate arn that was passed down from the main.tf file.
   # this is important as it is shared by both the ui and api.
   certificate_arn = "${var.certificate_arn}"
-
-  # Tags to track costs.
-  # No Version tag because this will be shared by all versions and stages of the App.
-  tags = {
-    Project     = "${var.website_subdomain}.${var.root_domain}"
-    ServiceType = "api"
-  }
 }
 
 # This `aws_api_gateway_base_path_mapping` is the actual mapping between
@@ -222,7 +150,7 @@ resource "aws_api_gateway_domain_name" "api_domain" {
 # and the actual API itself. It is added to the api's `aws_api_gateway_domain_name`
 # alongside any other versions of the api you wish to host.
 resource "aws_api_gateway_base_path_mapping" "path_mapping" {
-  api_id      = "${aws_api_gateway_rest_api.blog_posts_api.id}"
+  api_id      = "${aws_api_gateway_rest_api.blog_api.id}"
   stage_name  = "${aws_api_gateway_deployment.blog_posts_deployment.stage_name}"
   domain_name = "${aws_api_gateway_domain_name.api_domain.domain_name}"
 
@@ -230,15 +158,4 @@ resource "aws_api_gateway_base_path_mapping" "path_mapping" {
   # this `base_path` will be added to the end of our domain name whenever a request is made
   # to our API. 
   base_path = "${local.url_path_safe_version_number}"
-
-  # Tags to track costs.
-  tags = {
-    Project     = "${var.website_subdomain}.${var.root_domain}"
-    ServiceType = "api"
-    Version     = "${var.version}"
-  }
-}
-
-output "domain_name" {
-  value = "https://${aws_api_gateway_base_path_mapping.path_mapping.domain_name}/${aws_api_gateway_base_path_mapping.path_mapping.base_path}"
 }

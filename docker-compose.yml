@@ -23,7 +23,7 @@ services:
     ports:
       - 1337:1337
     environment:
-      - API_URL=https://api-for.doing.science
+      - API_URL=https://api-for.doing.science/v0_0_1
     depends_on: 
       - db
       - mock_data_populator

@@ -13,7 +13,6 @@
 # keep serving the assets to the locals. 
 #
 # Man, I should have been a science fiction writer...
-
 resource "aws_cloudfront_distribution" "client_distribution" {
   # The "origin" is the actual data we want to distribute.
   # All of the settings are just telling Cloudfront to look
@@ -25,11 +24,11 @@ resource "aws_cloudfront_distribution" "client_distribution" {
     # When we first create our distribution, Cloudfront
     # will download all the assets from this url and
     # then cache them across the world.
-    domain_name = "${aws_s3_bucket.www.website_endpoint}"
+    domain_name = "${aws_s3_bucket.client_source.website_endpoint}"
 
     # the id of the "origin". This is only used for other
     # services to be able to refrence this origin
-    origin_id = "${var.subdomain}.${var.root_domain}"
+    origin_id = "${local.id_for_cloudfront_origin}"
 
     # This config describes how cloudfront is going 
     # connect to the "origin".
@@ -51,14 +50,18 @@ resource "aws_cloudfront_distribution" "client_distribution" {
   # our cloudfront distro. You can use any filepath here. The best
   # thing to do would probably be to set it to:
   #
-  # default_root_object = "${aws_s3_bucket.www.website.index_document}"
+  # ```
+  # default_root_object = "${aws_s3_bucket.client_source.website.index_document}"
+  # ```
   #
-  # But I don't want to do that because I think it could cause confusion.
+  # I don't want to do that here because I think it obfuscated
+  # the fairly simple concept of how this whole CloudFront thing works.
+  #
   # The filepath we provide is going to be relative from the base
   # of our `origin`. Our origin is a file directory that was downloaded 
   # from the S3 bucket our assets are in. To prove this is the
   # case I'm going to play a dangerous game and set it like this:
-  default_root_object = "${var.version}/index.html"
+  default_root_object = "index.html"
 
   # This is the behavior that we will apply to all requests we
   # receive for the content itself.
@@ -76,8 +79,8 @@ resource "aws_cloudfront_distribution" "client_distribution" {
     cached_methods  = ["GET", "HEAD"]
 
     # the origin (aka source) we will serve to people
-    # upon request.
-    target_origin_id = "${self.origin.origin_id}"
+    # upon request. Same as the origin_id above but 
+    target_origin_id = "${local.id_for_cloudfront_origin}"
 
     # time to live for each cached copy of the
     # source content cloudfront downloads.
@@ -112,6 +115,10 @@ resource "aws_cloudfront_distribution" "client_distribution" {
     }
   }
 
+  # this is the list of domains that cloudfront will serve content to.
+  # So make sure at least one of them matches your domain.
+  aliases = ["${var.subdomain}.${var.root_domain}", "${var.root_domain}"]
+
   # This is the certificate we will use for HTTPS. We use the
   # same one in our API so we have passed the arn in via an
   # input variable.
@@ -119,4 +126,17 @@ resource "aws_cloudfront_distribution" "client_distribution" {
     acm_certificate_arn = "${var.certificate_arn}"
     ssl_support_method  = "sni-only"
   }
+
+  # Tags to track costs.
+  tags = {
+    Project     = "${var.subdomain}.${var.root_domain}"
+    ServiceType = "ui"
+  }
+}
+
+# need to make sure we use the same identifier when we
+# describe our "origin" (more on that a few lines down) and
+# when we configure how cloudfront caches assets
+locals {
+  id_for_cloudfront_origin = "${var.subdomain}.${var.root_domain}"
 }

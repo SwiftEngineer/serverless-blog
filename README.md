@@ -4,7 +4,10 @@ Get ready for some buzzwords, because things are about to get crazy. This projec
 
 This project is **purely for education**. However, if you want to fork it and use the stack to create your own project that's fine too.
 
-**IMPORTANT DISCLAIMER:** Using a stack like this to implement a simple Blog is complete overkill, and if you wanted to create your own Blog I would recommend you use a service designed for blogging instead of this. This project is to be used solely for those of you who are looking for new ways to think about Full-Stack development, or people who just plain want to learn more about programming in general. There is a ton here, and hopefully I'll be able to continue to make posts explaining it long into the future.
+**IMPORTANT DISCLAIMERS:** 
+
+1. Using a stack like this to implement a simple Blog is complete overkill, and if you wanted to create your own Blog I would recommend you use a service designed for blogging instead of this. This project is to be used solely for those of you who are looking for new ways to think about Full-Stack development, or people who just plain want to learn more about programming in general. There is a ton here, and hopefully I'll be able to continue to make posts explaining it long into the future.
+1. I'm using docker-compose here just to allow people to deploy the app from start to finish with a single command, and give people a thousand foot view of what's going on. The code in this repo is NOT an example of end-to-end content development to delivery or CI/CD. That is way out of scope. This repo mainly just shows how you can use terraform in a serverless environment to make your life easier.
 
 ## Why use Docker to Build and Deploy each service?
 
@@ -22,11 +25,11 @@ We use a docker container to build and deploy each service. Why? Docker let's us
 So to summarize, why do we use Docker to build and deploy the UI? We use it so we can manage dependencies, keep our services portable and save ourselves from some potentially time consuming mistakes.
 
 
-## Things to do after you Fork this
+## WARNING TO THOSE WHO FORK THIS:
 
-1. Add certificate to ACM, and make sure it's in us-east-1
-2. Do the terraform apply
-3. If you bought the cert from someone else besides amazon, you're gonna have to switch up the name servers on that domain. 
+1. Please. Please. Please. Do not use docker-compose to deploy your stuff. Use a CI/CD Pipeline. I've said this before and I'll say it again, I'm using docker-compose here just to allow people to deploy the app from start to finish with a single command.
+1. Do the terraform apply
+1. If you bought the cert from someone else besides amazon, you're gonna have to switch up the name servers on that domain.
 
 ```
 terraform state show aws_route53_zone.zone

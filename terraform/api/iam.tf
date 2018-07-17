@@ -17,12 +17,6 @@ resource "aws_iam_role" "blog_posts_lambda_exec" {
   ]
 }
 EOF
-
-  # Tags to track costs
-  tags = {
-    Project     = "${var.website_subdomain}.${var.root_domain}"
-    ServiceType = "api"
-  }
 }
 
 # IAM role policy with access to dynamo db read only features,
@@ -46,12 +40,6 @@ resource "aws_iam_role_policy" "blog_posts_dynamo_db_read_only" {
     ]
 }
 EOF
-
-  # Tags to track costs
-  tags = {
-    Project     = "${var.website_subdomain}.${var.root_domain}"
-    ServiceType = "api"
-  }
 }
 
 # IAM role policy with access to log creation in cloudwatch,
@@ -78,10 +66,4 @@ resource "aws_iam_role_policy" "cloud_watch" {
     ]
 }
 EOF
-
-  # Tags to track costs
-  tags = {
-    Project     = "${var.website_subdomain}.${var.root_domain}"
-    ServiceType = "api"
-  }
 }

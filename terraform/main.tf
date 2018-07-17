@@ -23,9 +23,8 @@ resource "aws_route53_zone" "zone" {
 
   # Tags to track costs.
   tags = {
-    Project     = "${var.website_subdomain}.${var.root_domain}"
+    Project     = "${var.subdomain}.${var.root_domain}"
     ServiceType = "api"
-    Version     = "${var.version}"
   }
 }
 
@@ -33,7 +32,7 @@ resource "aws_route53_zone" "zone" {
 # If you want to dig in, check out the code itself.
 module "api" {
   # Path to the module's source. If you wanna learn more about the API,
-  # check out the files in this folder.
+  # check out the files in the `api/` folder.
   source = "./api"
 
   aws_secret_key_id = "${var.aws_secret_key_id}"
@@ -54,10 +53,14 @@ module "api" {
 
   zone_id = "${aws_route53_zone.zone.zone_id}"
 
-  version = "${var.api_version}"
+  api_version = "${var.api_version}"
 }
 
+# This module describes the UI infrastructure we want to provision.
+# If you want to dig in, check out the code itself.
 module "ui" {
+  # Path to the module's source. If you wanna learn more about the UI,
+  # check out the files in the `api/` folder.
   source = "./ui"
 
   aws_secret_key_id = "${var.aws_secret_key_id}"
@@ -74,5 +77,7 @@ module "ui" {
 
   certificate_arn = "${aws_acm_certificate.cloudfront_certificate.arn}"
 
-  version = "${var.ui_version}"
+  zone_id = "${aws_route53_zone.zone.zone_id}"
+
+  ui_version = "${var.ui_version}"
 }

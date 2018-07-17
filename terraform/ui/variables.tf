@@ -28,6 +28,10 @@ variable "certificate_arn" {
   description = "ARN of certificate to use for HTTPS and gateway domain."
 }
 
-variable "version" {
-  description = "Semantic version number for the website. (e.g. \"1.0.0\", \"0.1.2\", \"1.3.7\")"
+variable "zone_id" {
+  description = "Route53 Zone to place all our Route53 records in for DNS lookups."
+}
+
+variable "ui_version" {
+  description = "Semantic version number for the website. (examples: \"1.0.0\", \"0.1.2\", \"1.3.7\")"
 }

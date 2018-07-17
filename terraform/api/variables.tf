@@ -36,6 +36,6 @@ variable "zone_id" {
   description = "Route53 Zone to place all our Route53 records in for DNS lookups."
 }
 
-variable "version" {
+variable "api_version" {
   description = "Version of the api to deploy. Other versions will not be affected. (examples: \"1.0.0\", \"0.1.2\", \"1.3.7\")"
 }

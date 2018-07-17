@@ -37,7 +37,7 @@ resource "aws_lambda_function" "posts_index" {
   tags = {
     Project     = "${var.website_subdomain}.${var.root_domain}"
     ServiceType = "api"
-    Version     = "${var.version}"
+    Version     = "${var.api_version}"
   }
 }
 
@@ -76,7 +76,7 @@ resource "aws_lambda_function" "posts_show" {
   tags = {
     Project     = "${var.website_subdomain}.${var.root_domain}"
     ServiceType = "api"
-    Version     = "${var.version}"
+    Version     = "${var.api_version}"
   }
 }
 
@@ -106,7 +106,7 @@ resource "aws_s3_bucket" "lambda_bucket" {
 resource "aws_s3_bucket_object" "lambda_code" {
   # because of the version key, we are going to make sure not to 
   # override existing versions of the app
-  key = "${var.version}/api.zip"
+  key = "${var.api_version}/api.zip"
 
   # Bucket the code is gonna go into
   bucket = "${aws_s3_bucket.lambda_bucket.id}"
@@ -116,6 +116,6 @@ resource "aws_s3_bucket_object" "lambda_code" {
   tags = {
     Project     = "${var.website_subdomain}.${var.root_domain}"
     ServiceType = "api"
-    Version     = "${var.version}"
+    Version     = "${var.api_version}"
   }
 }
