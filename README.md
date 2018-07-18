@@ -11,15 +11,10 @@ This project is **purely for education**. However, if you want to fork it and us
 
 ## What the heck is going on in the Code above?
 
-### Cool Tech Used:
-
-I used the following tech to get everything working and highly recommend you check them out. Although I don't recommend using them the way I used them here, they could do wonders for your project's dev/test environment.
-
-1. Docker - If you're not familiar with it, don't fret. All it is is an easy way for us to keep each of our services running in seperate virtual machines called "containers".
-
-1. Docker Compose - A tool for dev/test environments that allows simple orchistration of Dockerized services (a.k.a containers).
-
-1. AWS SAM Local - Pretty cool service that allows you to emulate Api Gateway via Docker. Great for testing or developing against the AWS Lambda service.
+Before we get into the **how**, I thought I'd give shoutouts to the following tech to get everything working and highly recommend you check them out. Although I don't recommend using them the way I used them here, they could do wonders for your project's dev/test environment:
+1. **Docker** - If you're not familiar with it, don't fret. All it is is an easy way for us to keep each of our services running in seperate virtual machines called "containers".
+1. **Docker Compose** - A tool for dev/test environments that allows simple orchistration of Dockerized services (a.k.a containers).
+1. **AWS SAM Local** - Pretty cool service that allows you to emulate Api Gateway via Docker. Great for testing or developing against the AWS Lambda service.
 
 ### How is it used?
 
