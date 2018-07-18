@@ -92,8 +92,8 @@ resource "aws_api_gateway_deployment" "blog_posts_deployment" {
 }
 
 # permission granted to the "aws_api_gateway_rest_api.blog_api" resource
-# that allows it invoke the lambdas
-resource "aws_lambda_permission" "api_gateway_deployment_lambda_allowance" {
+# that allows it invoke the index lambda
+resource "aws_lambda_permission" "api_gateway_deployment_index_lambda_allowance" {
   statement_id  = "AllowAPIGatewayInvoke"
   action        = "lambda:InvokeFunction"
   function_name = "${aws_lambda_function.posts_index.arn}"
@@ -105,6 +105,19 @@ resource "aws_lambda_permission" "api_gateway_deployment_lambda_allowance" {
   # Notice: We don't use the version number here, because we have an
   # API for each version, and this resource only works on one API at
   # a time.
+  source_arn = "${aws_api_gateway_deployment.blog_posts_deployment.execution_arn}/*/*"
+}
+
+# permission granted to the "aws_api_gateway_rest_api.blog_api" resource
+# that allows it invoke the show lambda
+resource "aws_lambda_permission" "api_gateway_deployment_show_lambda_allowance" {
+  statement_id  = "AllowAPIGatewayInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = "${aws_lambda_function.posts_show.arn}"
+  principal     = "apigateway.amazonaws.com"
+
+  # The */* portion grants access from any method on any resource,
+  # within this deployment.
   source_arn = "${aws_api_gateway_deployment.blog_posts_deployment.execution_arn}/*/*"
 }
 

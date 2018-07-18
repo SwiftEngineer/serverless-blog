@@ -15,8 +15,6 @@ resource "aws_dynamodb_table" "basic_dynamodb_table" {
 
   # 25 read / 25 write is just at the edge of the
   # free tier according to https://aws.amazon.com/dynamodb/pricing/ .
-  # If you have other services on DynamoDB and want to conserve
-  # resources, check out https://www.terraform.io/docs/providers/aws/r/api_gateway_base_path_mapping.html
   read_capacity = 25
 
   write_capacity = 25

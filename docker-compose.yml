@@ -37,7 +37,7 @@ services:
   # 2. Start a node.js server to serve the assets locally.
   #
   ui:
-    image: swiftdeveloper/swift-blog-ui:0.4.2
+    image: swiftdeveloper/swift-blog-ui:0.5.0
     volumes:
       - ./build/s3_ready_app:/app/s3_ready_app
     ports:
@@ -46,7 +46,7 @@ services:
       # this is the url for the API that will be used by the PRODUCTION version
       # of the app. If you wanna host your own version of the app you'll
       # want to change this.
-      - API_URL=https://api-for.doing.science/v0_0_1
+      - API_URL=https://api-for.doing.science/v1
     depends_on: 
       - db
       - mock_data_populator
@@ -62,7 +62,7 @@ services:
   #    as possible.
   #
   api:
-    image: swiftdeveloper/swift-blog-api:0.0.1
+    image: swiftdeveloper/swift-blog-api:1.0
     volumes:
       - ~/.aws:/root/.aws/:ro
       # because this image uses sam local, which uses docker,

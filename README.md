@@ -80,11 +80,10 @@ So to summarize, why do we use Docker to build and deploy the UI? We use it so w
 
 1. Please. Please. Please. Do not use docker-compose to deploy your stuff. Use a CI/CD Pipeline. I've said this before and I'll say it again, I'm using docker-compose here just to allow people to deploy the app from start to finish with a single command.
 1. Do the terraform apply
-1. If you bought the cert from someone else besides amazon, you're gonna have to switch up the name servers on that domain.
+1. If you bought the cert from someone else besides amazon, you're gonna have to switch up the name servers on that domain. To get the state of our Route53 Zone you should run something like the following:
 
 ```
-terraform state show aws_route53_zone.zone
-
+swift@Taylors-MacBook-Pro $ terraform state show aws_route53_zone.zone
 
 id             = ##############
 comment        = Managed by Terraform
@@ -97,5 +96,4 @@ name_servers.2 = ns-###.awsdns-###.com
 name_servers.3 = ns-###.awsdns-###.net
 tags.%         = 0
 zone_id        = ##############
-
 ```

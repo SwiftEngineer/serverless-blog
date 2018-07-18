@@ -1,17 +1,28 @@
-# this certificate is in us-east-1 because cloudfront needs it to be.
+# This is the ACM (Amazon Certificate Manager) certificate which proves
+# to Amazon that we own the domain. This same cert will be used for
+# all our TLS needs as well.
 resource "aws_acm_certificate" "cloudfront_certificate" {
-  // We want a wildcard cert so we can host subdomains later.
+  # We want a wildcard cert so we can use this for all the different
+  # subdomains across our app.
   domain_name = "*.${var.root_domain}"
 
-  // set validation method to dns
-  // we'll show the dns settings at the end
+  # set validation method to dns.
+  # if you bought the cert from somwhere else you'll probably
+  # have to change this to "EMAIL"
   validation_method = "DNS"
 
-  // make the certificate valid for the root domain too. 
-  // This is optional, so remove it if you don't want to redirect to a specific subdomain.
+  # make the certificate valid for the root domain too. 
+  # This is optional, so remove it if you want to make sure that
+  # Route53 redirects from your root domain DON'T work.
   subject_alternative_names = ["${var.root_domain}"]
 
   provider = "aws.us_east_provider"
+
+  # Tags to track costs.
+  tags = {
+    Project     = "${var.subdomain}.${var.root_domain}"
+    ServiceType = "api"
+  }
 }
 
 # route 53 zone for our domain.
