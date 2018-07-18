@@ -18,7 +18,7 @@ Before we get into the **how**, I thought I'd give shoutouts to the following te
 
 ### How is it used?
 
-The code in this repos can be viewed at a high level from the `docker-compose.yml` file. This file shows a breakdown of all the services that come together to form the Blog.
+The code in this repos can be viewed at a high level from the [docker-compose.yml](docker-compose.yml) file. This file shows a breakdown of all the services that come together to form the Blog.
 
 It describes 5 services but for our terraform deployment we only really care about 3 of them. These critical services are the `tf` (deployment) service, `ui` (client build process) service, `api` (api build process) service. There are two "phases" of the deployment process where each container is given a specific job.
 
