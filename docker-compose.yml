@@ -12,6 +12,9 @@ services:
   #
   tf:
     build: ./terraform
+    # after the service is finished waiting for the api and ui,
+    # it will run this command, which will just create a sh session
+    # we can connect to via the `docker attach` command.
     command: sh
     stdin_open: true
     tty: true
@@ -19,11 +22,10 @@ services:
       - ./build/lambda_ready_app:/lambda_ready_app
       - ./build/s3_ready_app:/s3_ready_app
       - ./terraform:/blog-infrastructure-terraform
-    depends_on:
-      - api
     environment:
-      - API_TARGET=api:3000
-      - UI_TARGET=ui:1338
+      # host.docker.internal resolves to our docker host via docker's own DNS.
+      - API_TARGET=host.docker.internal:3000
+      - UI_TARGET=host.docker.internal:1337
 
   # This is the ui service. 
   #
@@ -41,6 +43,9 @@ services:
     ports:
       - 1337:1337
     environment:
+      # this is the url for the API that will be used by the PRODUCTION version
+      # of the app. If you wanna host your own version of the app you'll
+      # want to change this.
       - API_URL=https://api-for.doing.science/v0_0_1
     depends_on: 
       - db
@@ -60,6 +65,10 @@ services:
     image: swiftdeveloper/swift-blog-api:0.0.1
     volumes:
       - ~/.aws:/root/.aws/:ro
+      # because this image uses sam local, which uses docker,
+      # we need to give this container our own `docker.sock` so
+      # it can use our docker host to run dockerized versions of
+      # api gateway and our aws lambda functions.
       - /var/run/docker.sock:/var/run/docker.sock
       - ./build/sam_local_ready_app:/sam_local_ready_app
       - ./build/lambda_ready_app:/lambda_ready_app
@@ -70,9 +79,6 @@ services:
       - HOST_CODE_PATH=${PWD}/build/sam_local_ready_app
       - DB_HOST=host.docker.internal
       - ALLOWED_ORIGIN=*
-    depends_on: 
-      - db
-      - mock_data_populator
 
   # This is the db service.
   #
@@ -90,13 +96,9 @@ services:
   #
   mock_data_populator:
     image: swiftdeveloper/swift-blog-api:express-latest
-    command: /bin/sh -c "wait-for-it.sh db:8000 -- node dynamo-db-populator.js"
+    command: /bin/sh -c "wait-for-it.sh host.docker.internal:8000 -- node dynamo-db-populator.js"
     volumes:
       - ~/.aws:/root/.aws/:ro
       - ./terraform/scripts/wait-for-it.sh:/usr/local/bin/wait-for-it.sh
     environment:
-      - DB_HOST=db
-    depends_on:
-      - db
-    links:
-      - db
+      - DB_HOST=host.docker.internal
