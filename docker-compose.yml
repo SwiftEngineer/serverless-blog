@@ -1,6 +1,15 @@
 version: '3'
 
 services:
+
+  # This is the terraform service. 
+  #
+  # It uses the Dockerfile in the /terraform folder.
+  #
+  # It's job is to take the assets produced by the other containers and deploy
+  # them to AWS S3 Buckets. Then provision all infrastructure we need.
+  # This includes the lambda services, api gateway, route53 records, etc.
+  #
   tf:
     build: ./terraform
     command: sh
@@ -16,6 +25,15 @@ services:
       - API_TARGET=api:3000
       - UI_TARGET=ui:1338
 
+  # This is the ui service. 
+  #
+  # It uses an image that I have hosted publicly on Docker Hub, so feel
+  # free to pull it down.
+  #
+  # It has two jobs, which is does sequentially:
+  # 1. Create a production optimized version of the ui.
+  # 2. Start a node.js server to serve the assets locally.
+  #
   ui:
     image: swiftdeveloper/swift-blog-ui:0.4.2
     volumes:
@@ -28,7 +46,16 @@ services:
       - db
       - mock_data_populator
 
-
+  # This the api service.
+  #
+  # It uses an image publicly hosted on Docker Hub as well.
+  #
+  # It has two jobs similar to the ui service but with a little extra complication.
+  # 1. Create a production optimized version of the api service.
+  # 2. Use AWS SAM Local to emulate an API Gateway/Lambda service locally,
+  #    so that we can test things out in an environment as close to production
+  #    as possible.
+  #
   api:
     image: swiftdeveloper/swift-blog-api:0.0.1
     volumes:
@@ -47,6 +74,20 @@ services:
       - db
       - mock_data_populator
 
+  # This is the db service.
+  #
+  # It is a local version of DynamoDB that we can use to
+  # test out how well our api is working.
+  #  
+  db:
+    image: cnadiminti/dynamodb-local:latest
+    ports:
+      - 8000:8000
+
+  # This service is pretty ignorable, it is a version of the
+  # api image that's sole purpose is to populate the local dynamodb
+  # service with some mock data.
+  #
   mock_data_populator:
     image: swiftdeveloper/swift-blog-api:express-latest
     command: /bin/sh -c "wait-for-it.sh db:8000 -- node dynamo-db-populator.js"
@@ -59,8 +100,3 @@ services:
       - db
     links:
       - db
-      
-  db:
-    image: cnadiminti/dynamodb-local:latest
-    ports:
-      - 8000:8000
